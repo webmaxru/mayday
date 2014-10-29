@@ -1,6 +1,5 @@
 
 import java.sql.*;
-import java.util.ArrayList;
 
 public class DBHandler {
 
@@ -12,40 +11,83 @@ public class DBHandler {
         db = new ConnectToDB("localhost", "world", user, password);
     }
 
-    public void showTable(String tableName) throws SQLException {
 
-        String query = "SELECT * FROM " + tableName;
-        try (Connection connection = db.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(query);) {
-            //ResultSetMetaData rsmd = resultSet.getMetaData();
-            TableReader reader = new TableReader(resultSet.getMetaData());
-            while (resultSet.next()) {
-                reader.showLine(resultSet);
-            }
+
+    public void dropTableIfExists(String tableName) throws SQLException {
+        String query = String.format("DROP TABLE IF EXISTS %s", tableName);
+            Connection connection = db.getConnection(); {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.executeUpdate();
+            System.out.printf("Table '%s' is dropped!%n", tableName);
         }
     }
 
+    //Print table data in console
+    public void showTable(String tableName) throws SQLException {
+
+        //Assuming that it's quite safe to use select * statement in this case
+        // because we'll anyway select all data from the table ignoring columns order
+
+        String query = String.format("SELECT * FROM %s", tableName);
+        try (Connection connection = db.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query);) {
+
+            TableHandler tableHandler = new TableHandler(resultSet);
+            tableHandler.showTable();
+        }
+        catch (SQLException e){
+        e.printStackTrace();        }
+
+    }
+
+    //returns object TableHandler that contains table data and metadata
+    public TableHandler getTable(String tableName) throws SQLException {
+
+        String query = String.format("SELECT * FROM %s", tableName);
+        TableHandler tableHandler = null;
+        try (Connection connection = db.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query);) {
+
+            tableHandler = new TableHandler(resultSet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return tableHandler;
+
+    }
+
+
+
+    //Create a mySQL table from a given file
     public void copyFile(String fileName, String tableName) throws SQLException {
         FileParser fileToCopy = new FileParser(fileName);
-        //String sql = "CREATE TABLE " + tableName + " IF NOT EXISTS;";
 
-        PreparedStatement preparedStatement = null;
-        try (Connection connection = db.getConnection()) {
-            preparedStatement = connection
-                    .prepareStatement("CREATE TABLE IF NOT EXISTS" + tableName + ";
-            preparedStatement = connection
-                    .prepareStatement("insert into " + tableName + " values (default, ?, ?, ?, ? , ?, ?)");
-            // "myuser, webpage, datum, summary, COMMENTS from FEEDBACK.COMMENTS");
-            // parameters start with 1
-            preparedStatement.setString(1, "Test");
-            preparedStatement.setString(2, "TestEmail");
-            preparedStatement.setString(3, "TestWebpage");
-            preparedStatement.setDate(4, new java.sql.Date(2009, 12, 11));
-            preparedStatement.setString(5, "TestSummary");
-            preparedStatement.setString(6, "TestComment");
+        //Try to establish connection
+        try (Connection connection = db.getConnection();) {
+
+            //Delete eventually existing table with this name
+            dropTableIfExists(tableName);
+
+            //Create table
+            PreparedStatement preparedStatement = connection.prepareStatement(fileToCopy.prepareCreateTableQuery(tableName));
             preparedStatement.executeUpdate();
+            System.out.println("Table " + tableName + " is created!");
 
-        }}
-*/
+            //Insert data
+            preparedStatement = connection.prepareStatement(fileToCopy.prepareInsertQuery(tableName));
+            preparedStatement.executeUpdate();
+            System.out.println("Data inserted");
+
+
+        } catch (SQLException e) {
+
+            System.out.println(e.getMessage());
+
+
+        }
+    }
+
 }
+
