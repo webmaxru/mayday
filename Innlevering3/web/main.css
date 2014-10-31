@@ -1,0 +1,109 @@
+input,
+select {
+    color: #ccc;
+    font-size: 30px;
+    border-radius: 5px;
+    border: 1px solid #555;
+    padding: 10px 20px;
+    background-color: #444;
+    cursor: pointer;
+}
+input:hover,
+select:hover {
+    border: 1px solid #777;
+    box-shadow: 0 0 10px #555;
+}
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
+body {
+    font: 16px Arial;
+    background-color: #333;
+    color: #777;
+}
+a {
+    color: #777;
+}
+a:hover {
+    color: #ccc;
+}
+h1,
+h2,
+h3 {
+    font-weight: normal;
+    color: #ccc;
+    margin: 0;
+}
+h3 {
+    font-size: 22px;
+    color: #ccc;
+}
+h1 {
+    font-size: 52px;
+    margin-bottom: 30px;
+    color: #ddd;
+}
+h2 {
+    font-size: 30px;
+    margin-bottom: 10px;
+    color: #fff;
+}
+header {
+    margin-bottom: 50px;
+}
+footer {
+    text-align: right;
+    padding-right: 20px;
+    font-size: 14px;
+    color: #777;
+}
+.wrapper {
+    width: 90%;
+    max-width: 800px;
+    margin: 10% auto;
+}
+.main {
+    padding: 60px 40px;
+    box-sizing: border-box;
+    border-radius: 20px;
+    border: 1px solid #555;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.albums {
+    margin-bottom: 30px;
+}
+.album {
+    border-bottom: 1px solid #555;
+    padding: 20px 0px;
+    text-align: left;
+}
+.album:first-child {
+    border-top: 1px solid #555;
+}
+.year {
+    font-size: 16px;
+    color: #777;
+}
+.tracks {
+    float: right;
+}
+.title {
+    float: left;
+}
+.clearfix:before,
+.clearfix:after {
+    content: " ";
+    display: table;
+}
+.clearfix:after {
+    clear: both;
+}
+.clearfix {
+    *zoom: 1;
+}
